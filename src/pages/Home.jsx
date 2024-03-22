@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import WeatherLocation from "../components/WeatherLocation";
 import { fetchWeather } from "../functions/api";
+import { Card, ListGroup } from "react-bootstrap";
 
 export default function Home() {
     const [location, setLocation] = useState({
@@ -44,32 +45,39 @@ export default function Home() {
                 <>
                     <h1>
                         Weather at current location
-                        
+
                     </h1>
                     <br />
                     <WeatherLocation />
                     {currentWeather.current ? (
-                        <p>
-                            Today's date: {currentWeather.current?.last_updated}
-                            <br />
+                        <div className="weather-card-container">
+                            <Card style={{ width: "18rem" }}>
+                                <Card.Img src={currentWeather?.current.condition.icon} variant="top" />
+                                <Card.Body>
+                                    <Card.Title>
+                                        Current Weather - {currentWeather.current?.last_updated}
+                                    </Card.Title>
+                                    <Card.Text>
+                                        {currentWeather.current.condition.text}
+                                    </Card.Text>
 
-                            Weather Condition: {currentWeather.current?.condition.text}
-                            <br />
-                            <img src={currentWeather.current?.condition.icon}/>
-                            <br />
-                            <p>Cloudy: {currentWeather.current?.cloud}</p>
-                            Temperature: {currentWeather.current?.temp_f} °F / {currentWeather.current?.temp_c + "°C"}
-                            <br />
-                            Precipitation: {currentWeather.current?.precip_mm} mm
-                            <br />
-                            Pressure: {currentWeather.current?.pressure_in} in Hg
-                            <br />
-                            Visibility: {currentWeather.current?.vis_miles} mi
-                            <br />
-                            Wind Degree: {currentWeather.current?.wind_degree} degrees
-                            <br />
-                            Wind Speed: {currentWeather.current?.wind_mph} mph
-                        </p>
+                                    <ListGroup className="list-group-weather-info">
+                                        <ListGroup.Item>Cloudy: {currentWeather.current?.cloud}</ListGroup.Item>
+                                        <ListGroup.Item>Temperature: {currentWeather.current?.temp_f} °F / {currentWeather.current?.temp_c + "°C"}</ListGroup.Item>
+                                        <ListGroup.Item>Precipitation: {currentWeather.current?.precip_mm} mm</ListGroup.Item>
+                                        <ListGroup.Item>Pressure: {currentWeather.current?.pressure_in} in Hg</ListGroup.Item>
+                                        <ListGroup.Item>Visibility: {currentWeather.current?.vis_miles} mi</ListGroup.Item>
+                                        <ListGroup.Item>Wind Degree: {currentWeather.current?.wind_degree} degrees</ListGroup.Item>
+                                        <ListGroup.Item>Wind Speed: {currentWeather.current?.wind_mph} mph</ListGroup.Item>
+                                    </ListGroup>
+                                </Card.Body>
+                            </Card>
+
+
+
+
+                        </div>
+
                     ) : <p>Loading...</p>}
                 </>
             ) : (
