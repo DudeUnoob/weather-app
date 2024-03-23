@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { fetchWeather } from "../functions/api";
+import { useUpdateSearchedLocation,  getSearchedLocation } from "../context/WeatherContext";
 
 export default function WeatherLocation() {
     const [searchResults, setSearchResults] = useState([]);
@@ -7,6 +8,12 @@ export default function WeatherLocation() {
     const debounceTimer = useRef(null);
     const inputRef = useRef(null);
 
+    const updateSearchedLocation = useUpdateSearchedLocation();
+    const fetchSearchedLocation = getSearchedLocation()
+
+    const handleLocationChange = (result) => {
+        updateSearchedLocation(result);
+    };
 
     const debounce = (func, delay) => {
         clearTimeout(debounceTimer.current);
@@ -49,7 +56,7 @@ export default function WeatherLocation() {
             {isLoading && <p>Loading...</p>}
             <ul>
                 {searchResults?.map((result) => (
-                    <li key={result.id}>{result.name}, {result.region}, {result.country}</li>
+                    <li key={result.id} onClick={() => handleLocationChange(result)} style={{ cursor:"pointer" }}>{result.name}, {result.region}, {result.country}</li>
                 ))}
             </ul>
         </div>
