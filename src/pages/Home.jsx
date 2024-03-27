@@ -2,8 +2,13 @@ import React, { useState, useEffect } from "react";
 import WeatherLocation from "../components/WeatherLocation";
 import { fetchWeather } from "../functions/api";
 import { Card, ListGroup } from "react-bootstrap";
+import { useUpdateSearchedLocation,  getSearchedLocation } from "../context/WeatherContext";
+
+
 
 export default function Home() {
+    const fetchSearchedLocation = getSearchedLocation()
+
     const [location, setLocation] = useState({
         latitude: null,
         longitude: null,
@@ -16,7 +21,31 @@ export default function Home() {
     const [currentWeather, setCurrentWeather] = useState({});
 
     useEffect(() => {
-        if ("geolocation" in navigator) {
+        if(Object.keys(fetchSearchedLocation).length > 0) {
+
+            const originalObj = { lat: fetchSearchedLocation.lat, lon: fetchSearchedLocation.lon, name: fetchSearchedLocation.name }
+
+            const keyMap = {
+                lat: "latitude",
+                lon: "longitude",
+                name:"cityName"
+                
+            }
+
+            const newObj = {}
+
+            for (const [oldKey, newKey] of Object.entries(keyMap)) {
+                newObj[newKey] = originalObj[oldKey]
+            }
+
+
+            setLocation((currentState) => {
+                    return {...newObj}
+                    }
+            )
+        }   
+
+        else if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition((position) => {
                 const latitude = position.coords.latitude;
                 const longitude = position.coords.longitude;
@@ -29,7 +58,10 @@ export default function Home() {
         } else {
             console.log("Geolocation is not available.");
         }
-    }, []);
+
+        console.log(fetchSearchedLocation)
+
+    }, [fetchSearchedLocation]);
 
     useEffect(() => {
         if (location.latitude && location.longitude) {
@@ -55,7 +87,7 @@ export default function Home() {
                                 <Card.Img src={currentWeather?.current.condition.icon} variant="top" />
                                 <Card.Body>
                                     <Card.Title>
-                                        Current Weather - {currentWeather.current?.last_updated}
+                                        Current Weather in {currentWeather?.location?.name}, {currentWeather?.location?.region}, {currentWeather?.location?.country} - {currentWeather.current?.last_updated}
                                     </Card.Title>
                                     <Card.Text>
                                         {currentWeather.current.condition.text}
