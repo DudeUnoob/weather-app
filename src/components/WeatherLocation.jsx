@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import { fetchWeather } from "../functions/api";
-import { useUpdateSearchedLocation,  getSearchedLocation } from "../context/WeatherContext";
+import { useUpdateSearchedLocation, getSearchedLocation } from "../context/WeatherContext";
 
 export default function WeatherLocation() {
     const [searchResults, setSearchResults] = useState([]);
@@ -11,16 +11,17 @@ export default function WeatherLocation() {
     const updateSearchedLocation = useUpdateSearchedLocation();
     const fetchSearchedLocation = getSearchedLocation()
 
-    const handleLocationChange = (result) => {
+    const handleLocationChange = useCallback((result) => {
         updateSearchedLocation(result);
-    };
+    }, [updateSearchedLocation]);
 
-    const debounce = (func, delay) => {
+    const debounce = useCallback((func, delay) => {
         clearTimeout(debounceTimer.current);
         debounceTimer.current = setTimeout(func, delay);
-    };
+    }, []);
 
-    const fetchData = async (query) => {
+
+    const fetchData = useCallback(async (query) => {
         setIsLoading(true);
         try {
             const data = await fetchWeather(`search.json`, query);
@@ -30,9 +31,9 @@ export default function WeatherLocation() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
-    const handleInputChange = (e) => {
+    const handleInputChange = useCallback((e) => {
         const query = e.target.value;
         debounce(() => {
             if (query.trim() !== '') {
@@ -41,7 +42,7 @@ export default function WeatherLocation() {
                 setSearchResults([]);
             }
         }, 500);
-    };
+    }, [debounce, fetchData]);
 
     return (
         <div className="weather-location-input">
@@ -56,7 +57,7 @@ export default function WeatherLocation() {
             {isLoading && <p>Loading...</p>}
             <ul>
                 {searchResults?.map((result) => (
-                    <li key={result.id} onClick={() => handleLocationChange(result)} style={{ cursor:"pointer" }}>{result.name}, {result.region}, {result.country}</li>
+                    <li key={result.id} onClick={() => handleLocationChange(result)} style={{ cursor: "pointer" }}>{result.name}, {result.region}, {result.country}</li>
                 ))}
             </ul>
         </div>
