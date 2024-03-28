@@ -45,7 +45,8 @@ export default function WeatherLocation() {
     }, [debounce, fetchData]);
 
     return (
-        <div className="weather-location-input">
+        <>
+        <div className="weather-location-input" style={{ display:"flex", justifyContent:'center', flexDirection:"column", flexWrap:"wrap", alignContent:"center"}}>
             <input
                 type="text"
                 name="search_location"
@@ -54,6 +55,8 @@ export default function WeatherLocation() {
                 onChange={handleInputChange}
             />
 
+            <br />
+
             {isLoading && <p>Loading...</p>}
             <ul>
                 {searchResults?.map((result) => (
@@ -61,5 +64,8 @@ export default function WeatherLocation() {
                 ))}
             </ul>
         </div>
+        <br />
+            <br />
+        </>
     );
 }
