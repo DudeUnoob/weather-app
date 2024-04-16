@@ -1,0 +1,7 @@
+
+
+.list_group_item:hover {
+    background-color: rgb(228, 227, 227);
+    cursor: pointer;
+    transition: all 0.5s;
+}

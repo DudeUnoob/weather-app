@@ -1,9 +1,12 @@
 import React, { useState, useRef, useCallback, useMemo } from "react";
 import { fetchWeather } from "../functions/api";
 import { useUpdateSearchedLocation, getSearchedLocation } from "../context/WeatherContext";
+import { Form, FormControl, ListGroup, ListGroupItem } from "react-bootstrap";
+import WeatherLocationStyles from "../css/WeatherLocation.module.css"
 
 export default function WeatherLocation() {
     const [searchResults, setSearchResults] = useState([]);
+    const [currentActiveLocation, setCurrentActiveLocation] = useState(null)
     const [isLoading, setIsLoading] = useState(false);
     const debounceTimer = useRef(null);
     const inputRef = useRef(null);
@@ -13,6 +16,7 @@ export default function WeatherLocation() {
 
     const handleLocationChange = useCallback((result) => {
         updateSearchedLocation(result);
+        setCurrentActiveLocation(result)
     }, [updateSearchedLocation]);
 
     const debounce = useCallback((func, delay) => {
@@ -46,24 +50,42 @@ export default function WeatherLocation() {
 
     return (
         <>
-        <div className="weather-location-input" style={{ display:"flex", justifyContent:'center', flexDirection:"column", flexWrap:"wrap", alignContent:"center"}}>
-            <input
+        <div className="weather-location-input" style={{ 
+            display: 'flex',
+            placeContent:"center",
+            flexFlow:"column-wrap",
+            justifyContent:"center",
+            alignItems:"center",
+            alignContent:'center',
+            flexDirection:"column"
+
+        }}>
+            {/* <input
                 type="text"
                 name="search_location"
                 ref={inputRef}
                 placeholder="Enter location..."
                 onChange={handleInputChange}
-            />
+            /> */}
+        <FormControl style={{ width:"300px", maxWidth: "100%", overflow: "hidden" }} ref={inputRef} type="text" placeholder="Enter location..." onChange={handleInputChange}/>
 
             <br />
 
             {isLoading && <p>Loading...</p>}
-            <ul>
+            <ListGroup>
                 {searchResults?.map((result) => (
-                    <li key={result.id} onClick={() => handleLocationChange(result)} style={{ cursor: "pointer" }}>{result.name}, {result.region}, {result.country}</li>
+                    <ListGroup.Item key={result.id} onClick={() => {
+                        handleLocationChange(result)
+                    }} 
+                   
+                    className={currentActiveLocation?.id != result?.id ? WeatherLocationStyles.list_group_item : null}
+                    active={currentActiveLocation?.id == result?.id}
+                    
+                    >{result.name}, {result.region}, {result.country}</ListGroup.Item>
                 ))}
-            </ul>
+            </ListGroup>
         </div>
+
         <br />
             <br />
         </>
